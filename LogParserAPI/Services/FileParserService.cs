@@ -39,5 +39,19 @@ namespace LogParserAPI.Services
 
             return result;
         }
+
+        public void GenerateFilteredLogs(string outputDirectory)
+        {
+            var result = ParseLogFile();
+
+            if (!Directory.Exists(outputDirectory))
+            {
+                Directory.CreateDirectory(outputDirectory);
+            }
+
+            File.WriteAllLines(Path.Combine(outputDirectory, "Errors.log"), result.Errors);
+            File.WriteAllLines(Path.Combine(outputDirectory, "Warnings.log"), result.Warnings);
+            File.WriteAllLines(Path.Combine(outputDirectory, "Info.log"), result.Infos);
+        }
     }
 }
