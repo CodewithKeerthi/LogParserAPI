@@ -5,21 +5,42 @@ namespace LogParserAPI.Services
 {
     public class FileParserService
     {
-        private readonly string _logFilePath;
+        private readonly string? _logFilePath;
+        private readonly Stream? _logStream;
 
+        // Constructor for file path usage
         public FileParserService(string logFilePath)
         {
             _logFilePath = logFilePath;
         }
 
+        // Constructor for stream usage (e.g., file upload)
+        public FileParserService(Stream logStream)
+        {
+            _logStream = logStream;
+        }
+
         public LogParserResult ParseLogFile()
         {
             var result = new LogParserResult();
+            string[] lines;
 
-            if (!File.Exists(_logFilePath))
-                throw new FileNotFoundException("Log file not found", _logFilePath);
-
-            var lines = File.ReadAllLines(_logFilePath);
+            if (_logStream != null)
+            {
+                // Read from uploaded file stream
+                using var reader = new StreamReader(_logStream);
+                var fileContent = reader.ReadToEnd();
+                lines = fileContent.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+            }
+            else if (!string.IsNullOrEmpty(_logFilePath) && File.Exists(_logFilePath))
+            {
+                // Read from fixed file path
+                lines = File.ReadAllLines(_logFilePath);
+            }
+            else
+            {
+                throw new FileNotFoundException("No valid log file source provided.");
+            }
 
             foreach (var line in lines)
             {
