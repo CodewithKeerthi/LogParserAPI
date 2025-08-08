@@ -10,9 +10,7 @@ namespace LogParserAPI.Controllers
     {
         // Default parser using fixed file path
         private readonly FileParserService _pathParser;
-        // Stream-based parser for uploads
-        private FileParserService _streamParser => new FileParserService((Stream?)null);
-
+        
         public LogParserController()
         {
             var logFilePath = @"C:\Logs\application.log"; // Or inject via configuration
